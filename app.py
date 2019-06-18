@@ -17,13 +17,10 @@ def root():
     return PAGE_FMT.format(generate_code(time.time()))
 
 def generate_code(s, period=PERIOD, length=LENGTH, alphabet=ALPHABET):
-    num = int(s) / period
-    random.seed(num)
-    code = ''
-    for ii in range(length):
-        ind = random.randint(0, len(alphabet)-1)
-        code += alphabet[ind]
-    return code
+    random.seed(int(s) / period)
+    return ''.join([
+        alphabet[random.randint(0, len(alphabet)-1)] for _ in range(length)
+    ])
 
 if __name__ == '__main__':
-    app.run(host='localhost')
+    app.run(host='localhost', debug=True)

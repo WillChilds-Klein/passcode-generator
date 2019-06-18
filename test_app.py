@@ -6,6 +6,12 @@ from app import generate_code
 
 ONE_WEEK = 60*60*24*7
 
+ALPHABETS = [
+    map(chr, range(ord('a'), ord('z')+1)),  # lowercase alphabet
+    map(chr, range(ord('0'), ord('9')+1)),  # base-10 digits
+    [i for i in 'abcdef0123456789'],        # base-16 digits
+]
+
 
 @pytest.mark.parametrize('now', [0, random.randint(0,10000) * ONE_WEEK])
 def test_week_boundaries(now):
@@ -29,12 +35,8 @@ def test_current_time():
 
 
 @pytest.mark.parametrize('period', [1, ONE_WEEK/7, ONE_WEEK, ONE_WEEK*52])
-@pytest.mark.parametrize('length', range(1, 10))
-@pytest.mark.parametrize('alphabet', [
-    map(chr,range(ord('a'), ord('z')+1)),   # lowercase alphabet
-    map(chr,range(ord('0'), ord('9')+1)),   # base-10 digits
-    [i for i in 'abcdef0123456789'],        # base-16 digits
-])
+@pytest.mark.parametrize('length', range(4, 10))
+@pytest.mark.parametrize('alphabet', ALPHABETS)
 def test_current_time_non_defaults(period, length, alphabet):
     now = time.time()
     args = {'period': period, 'length': length, 'alphabet': alphabet}
@@ -45,3 +47,10 @@ def test_current_time_non_defaults(period, length, alphabet):
     assert today == still_this_period
     assert today != next_period
     assert still_this_period != next_period
+
+@pytest.mark.parametrize('alphabet', ALPHABETS)
+def test_code_string_contains_only_alphabet_members(alphabet):
+    now = time.time()
+    code = generate_code(now, alphabet=alphabet)
+    for char in str(code):
+        assert char in alphabet
